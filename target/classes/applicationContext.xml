@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:lang="http://www.springframework.org/schema/lang"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang.xsd">
+
+    <!--激活注解-->
+    <context:component-scan base-package="com.gqb.service"/>
+
+    <!--aop-->
+    <!--1.激活自动代理-->
+    <aop:aspectj-autoproxy/>
+    <!--2.注册一个可用于切面的类-->
+    <bean class="com.gqb.aspect.Before" id="before"/>
+    <bean class="com.gqb.aspect.After" id="after"/>
+    <bean class="com.gqb.aspect.Exception" id="exception"/>
+    <bean class="com.gqb.aspect.Around" id="around"/>
+    <!--3.配置切入点-->
+    <aop:config>
+        <aop:aspect id="aroundAspect" ref="around">
+            <aop:around method="around" pointcut="execution(* com..*(..))"/>
+        </aop:aspect>
+    </aop:config>
+    <aop:config>
+        <aop:aspect id="beforeAspect" ref="before">
+            <aop:before method="init" pointcut="execution(* com.gqb.service.StudentService.*(..))"/>
+            <aop:before method="getInfo" pointcut="execution(* com.gqb.service.StudentService.*(..))"/>
+        </aop:aspect>
+    </aop:config>
+
+    <!--returning 为切点方法的返回值，切面方法通过returnValue获取返回值-->
+    <aop:config>
+        <aop:aspect id="afterAspect" ref="after">
+            <aop:after-returning method="afterReturn" returning="returnValue"
+                                 pointcut="execution(* com.gqb.service.*.*(..))"></aop:after-returning>
+        </aop:aspect>
+    </aop:config>
+
+    <aop:config>
+        <aop:aspect id="exceptionAspect" ref="exception">
+            <aop:after-throwing method="exe" pointcut="execution(* com..*.*(..))"/>
+        </aop:aspect>
+    </aop:config>
+
+    <bean class="com.gqb.pojo.Student" id="student2" lazy-init="true">
+        <constructor-arg name="name" value="gqb"></constructor-arg>
+    </bean>
+
+    <bean class="com.gqb.pojo.Student" id="student" lazy-init="true">
+        <property name="name" value="空"></property>
+        <property name="id" value="2430106"></property>
+        <property name="friends">
+            <array>
+                <value>空1</value>
+                <value>空2</value>
+                <value>空3</value>
+                <value>空4</value>
+                <value>空5</value>
+            </array>
+        </property>
+        <property name="friendsId">
+            <list>
+                <value>2430101</value>
+                <value>2430102</value>
+                <value>2430103</value>
+                <value>2430104</value>
+                <value>2430105</value>
+            </list>
+        </property>
+    </bean>
+
+</beans>

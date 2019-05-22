@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!--
+    注意：
+    如果使用 <properties resource="jdbc.properties">
+    假如jdbc.properties含有username
+    即使<property>中写错也没事
+    也就是说 <properties resource="jdbc.properties">优先级高于<property />
+
+    但是<dataSource>里的字面值属性最高，高于<properties resource="jdbc.properties">
+    -->
+    <properties resource="jdbc.properties">
+        <property name="username" value="root111"/>
+    </properties>
+    
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="logImpl" value="LOG4J"/>
+    </settings>
+
+    <!--类型别名-->
+    <typeAliases>
+        <!--可以在别的mapper文件中使用别名-->
+        <typeAlias type="com.gqb.pojo.Student" alias="stu"/>
+    </typeAliases>
+    <!-- Continue editing here -->
+    <environments default="dev">
+        <environment id="dev">
+            <transactionManager type="JDBC"></transactionManager>
+            <dataSource type="UNPOOLED">
+                <property name="url" value="${url}"/>
+                <property name="driver" value="${driver}"/>
+                <!-- 可以通过${}引用property里面的属性-->
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <!-- 引用资源的方式-->
+        <mapper resource="com.gqb.mapper/StudentMapper.xml"></mapper>
+        <mapper resource="com.gqb.mapper/StudentDetailMapper.xml"></mapper>
+    </mappers>
+
+</configuration>

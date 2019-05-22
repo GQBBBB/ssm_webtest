@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gqb.mapper.StudentMapper">
+
+    <insert id="insert">
+        insert into student (name) values(#{name})
+    </insert>
+
+    <!--虽然变红了，但是别名stu仍然可以使用-->
+    <!--不推荐使用-->
+    <select id="selectByID" resultType="stu">
+        select * from student where id=#{id}
+    </select>
+
+    <resultMap id="studet" type="com.gqb.pojo.Student">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+    </resultMap>
+
+    <!--association 用于一对一-->
+    <!--方法一 使用association-->
+    <resultMap id="StudentWithDetail" extends="studet" type="com.gqb.pojo.StudentWithDetail">
+        <association property="studentDetail" javaType="com.gqb.pojo.StudentDetail">
+            <id property="id" column="did"></id>
+            <result property="sid" column="sid"></result>
+            <result property="tel" column="tel"></result>
+            <result property="date" column="date"></result>
+        </association>
+    </resultMap>
+
+    <!--方法二 使用联结-->
+<!--        <resultMap id="StudentWithDetail" extends="studet" type="com.gqb.pojo.StudentWithDetail">-->
+<!--                <result property="studentDetail.id" column="did"></result>-->
+<!--                <result property="studentDetail.sid" column="sid"></result>-->
+<!--                <result property="studentDetail.tel" column="tel"></result>-->
+<!--                <result property="studentDetail.date" column="date"></result>-->
+<!--        </resultMap>-->
+
+    <select id="queryByID" resultMap="StudentWithDetail">
+        select s.id, s.name, sd.id as did, sd.sid, sd.tel, sd.date
+        from student s, student_detail sd
+        <where>
+            s.id = sd.sid
+            and s.id = #{id}
+        </where>
+    </select>
+
+    <!--方法三 分部查询-->
+    <resultMap id="StudentWithDetailStep" extends="studet" type="com.gqb.pojo.StudentWithDetail">
+        <association property="studentDetail" select="com.gqb.mapper.StudentDetailMapper.selectByID"
+                     column="id"></association>
+    </resultMap>
+
+    <select id="queryByIDStep" resultMap="StudentWithDetailStep">
+        select s.id, s.name
+        from student s
+        <where>
+            s.id = #{id}
+        </where>
+    </select>
+
+
+</mapper>
